@@ -18,7 +18,6 @@ def bot_automation(order_id):
         print("Order not found or missing big_link/password")
         return
 
-
     big_link = order.big_link
     print(big_link)
     password = order.password
@@ -34,37 +33,28 @@ def bot_automation(order_id):
     access_code = access_order.access_code
     print(f"Access Code: {access_code}")
 
-
-    ## retirenving password from database that custoemer has stored
-    # Retrieve customer order details by order_id and role
-    access_order = Order.query.filter_by(order_id=order_id, role='customer').first()
-
-    # Check if the order and email field exist
+    # Retrieve customer email
     if not access_order or not access_order.email:
         print("Customer email not found")
         return
 
-    # Extract the customer's email
     email = access_order.email
-
-    # Print the extracted email
     print(f"Customer email: {email}")
 
     options = webdriver.ChromeOptions()
-    options.add_experimental_option("debuggerAddress", "localhost:9222")
-    # options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-    # options.add_argument("--headless")
-    options.add_argument("--disable-dev-shm-usage")
+    # Run in headless mode on Heroku
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
-    # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")  # Optional: Disable GPU acceleration
+    # Set the binary location of Chrome, if needed
+    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN", "/app/.apt/usr/bin/google-chrome")
 
-
-   # driver = webdriver.Chrome(executable_path)
     # Set up the Chrome service and driver
     driver_path = ChromeDriverManager().install()
     s = ChromeService(driver_path)
     driver = webdriver.Chrome(service=s, options=options)
-    #
+    
     print('\nDriver: ', driver)
 
     # Open the website (this will use your existing logged-in session)
@@ -156,11 +146,10 @@ def bot_automation(order_id):
         print("5-digit code not found.")
 
     try:
-        send_pin_email(email,four_digit_code,password)
-        print("5 digit pin sent to the customer on")
+        send_pin_email(email, four_digit_code, password)
+        print("5-digit pin sent to the customer.")
     except:
-        print("mail not sent")
-
+        print("Mail not sent")
 
     # Close the driver after the operation
     driver.quit()
