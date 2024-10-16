@@ -110,7 +110,7 @@ def bot_automation(order_id):
     time.sleep(1)
 
     # Pass both password and CSRF token
-    password_field = WebDriverWait(driver, 10).until(
+    password_field = WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.ID, "reauthenticate-form_pc_input_0"))
     )
     password_field.send_keys(password)
@@ -124,7 +124,7 @@ def bot_automation(order_id):
         print("CSRF Token field not found or not needed.")
 
     # Click the OK button
-    ok_button = WebDriverWait(driver, 10).until(
+    ok_button = WebDriverWait(driver, 5).until(
         EC.element_to_be_clickable((By.ID, "reauthenticate-form_pc_button_0"))
     )
     ok_button.click()
@@ -142,12 +142,12 @@ def bot_automation(order_id):
 
     # Wait for the 5-digit code to appear
     try:
-        code_element = WebDriverWait(driver, 20).until(
+        code_element = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, ".DeviceLoginPincodeShow_pincode_data"))
         )
 
         # Extract the 5-digit code text
-        time.sleep(2)
+        # time.sleep(2) removed to reduce the time
         four_digit_code = code_element.text
         print(f"5-digit code is: {four_digit_code}")
 
@@ -155,11 +155,11 @@ def bot_automation(order_id):
     except:
         print("5-digit code not found.")
 
-    try:
-        send_pin_email(email,four_digit_code,password)
-        print("5 digit pin sent to the customer on")
-    except:
-        print("mail not sent")
+    # try:
+    #     send_pin_email(email,four_digit_code,password)
+    #     print("5 digit pin sent to the customer on")
+    # except:
+    #     print("mail not sent")
 
 
     # Close the driver after the operation
