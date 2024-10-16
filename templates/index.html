@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* Keep all your existing styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 600px;
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #f8b400;
+            text-align: center;
+        }
+
+        label {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background-color: #333;
+            color: #f8f8f8;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="submit"],
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #f8b400;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background-color: #ffbf00;
+        }
+
+        /* Email Popup Styling */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .close-btn {
+            background-color: #f8b400;
+            color: #000;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Form to enter order ID, password, big link -->
+        <form action="{{ url_for('main.save') }}" method="post">
+            <label for="order_id">Order ID:</label>
+            <input type="text" id="order_id" name="order_id" required>
+
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" required>
+
+            <label for="big_link">Big Link:</label>
+            <input type="text" id="big_link" name="big_link" required>
+
+            <input type="submit" value="Save">
+        </form>
+
+        <!-- Email Popup -->
+        <div class="popup-overlay" id="emailPopup">
+            <div class="popup-content">
+                <h2>Send Email</h2>
+                <form action="{{ url_for('main.send_email') }}" method="post">
+                    <input type="hidden" name="order_id" value="{{ order_id }}">
+                    <input type="hidden" name="password" value="{{ password }}">
+                    <input type="hidden" name="big_link" value="{{ big_link }}">
+
+                    <label for="email">Customer Email:</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <input type="submit" value="Send Email">
+                </form>
+                <button class="close-btn" id="closePopup">Close</button>
+            </div>
+        </div>
+
+
+        <!-- View Database Section -->
+        <div class="db-section">
+            <h2>View Previous Orders</h2>
+            <form action="{{ url_for('main.view_db') }}" method="get">
+                <button type="submit">View Database</button>
+            </form>
+
+            <!-- Table to show the database content -->
+            {% if orders %}
+            <table>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Password</th>
+                    <th>Big Link</th>
+                    <th>Email</th>
+                </tr>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.password }}</td>
+                    <td>{{ order.big_link }}</td>
+                    <td>{{ order.email }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            &copy; 2024 Admin Dashboard. Powered by <a href="#">YourCompany</a>.
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle the popup
+        const emailPopup = document.getElementById('emailPopup');
+        const closePopupBtn = document.getElementById('closePopup');
+
+        // Show popup if show_email_popup is true
+        {% if show_email_popup %}
+        emailPopup.style.display = 'flex';
+        {% endif %}
+
+        closePopupBtn.addEventListener('click', function () {
+            emailPopup.style.display = 'none';
+        });
+    </script>
+
+</body>
+
+</html>

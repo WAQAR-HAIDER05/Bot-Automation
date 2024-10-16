@@ -1,0 +1,172 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Request</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 600px;
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #f8b400;
+            text-align: center;
+        }
+        label {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background-color: #333;
+            color: #f8f8f8;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #f8b400;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #ffbf00;
+        }
+        /* Popup Styling */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+        .close-btn {
+            background-color: #f8b400;
+            color: #000;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your order  Information</h1>
+        <form id="requestForm" method="POST" onsubmit="return validateAccessCode(event);">
+            <label for="order_id">Order ID:</label>
+            <input type="text" name="order_id" required>
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+            <label for="access_code">Access Code:</label>
+            <input type="text" name="access_code" required>
+            <input type="submit" value="Submit">
+        </form>
+
+        <!-- Processing Popup -->
+        <div class="popup-overlay" id="processingPopup">
+            <div class="popup-content">
+                <h2>Please Wait While Processing</h2>
+                <p>Your request is being processed...</p>
+            </div>
+        </div>
+
+        <!-- Success Popup -->
+        <div class="popup-overlay" id="successPopup">
+            <div class="popup-content">
+                <h2>Email Sent Successfully!</h2>
+                <button class="close-btn" id="closeSuccessPopup">Close</button>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function validateAccessCode(event) {
+            const accessCodeInput = document.getElementsByName('access_code')[0];
+            const accessCodeValue = accessCodeInput.value;
+            if (!/^[A-Z]+$/.test(accessCodeValue)) {
+                alert("Access code must be in capital letters only.");
+                event.preventDefault();
+                return false;
+            }
+            showProcessingPopup(event);
+            return true;
+        }
+
+        function showProcessingPopup(event) {
+            event.preventDefault(); // Prevent form submission for now
+            const processingPopup = document.getElementById('processingPopup');
+            processingPopup.style.display = 'flex';
+
+            // Simulate processing and email sending
+            setTimeout(() => {
+                processingPopup.style.display = 'none'; // Hide processing popup
+                showSuccessPopup();
+            }, 2000); // Simulating a 2-second processing time
+        }
+
+        function showSuccessPopup() {
+            const successPopup = document.getElementById('successPopup');
+            successPopup.style.display = 'flex';
+        }
+
+        // Close success popup
+        document.getElementById('closeSuccessPopup').addEventListener('click', () => {
+            document.getElementById('successPopup').style.display = 'none';
+            document.getElementById('requestForm').submit(); // Now submit the form
+        });
+    </script>
+</body>
+</html>

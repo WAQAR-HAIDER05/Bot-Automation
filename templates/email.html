@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email</title>
+    <style>
+        /* Global Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #212121; /* Dark background */
+            color: #fff; /* White text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Form Container Styling */
+        .form-container {
+            background-color: #333; /* Darker background */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #f7dc6f; /* Yellow theme */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+            color: #fff; /* White text */
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input[type="email"]:focus {
+            border-color: #f7dc6f; /* Focus border matches theme */
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #f7dc6f; /* Yellow button */
+            color: #212121; /* Dark text */
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffd700; /* Darker yellow on hover */
+        }
+
+        .form-container form {
+            margin-top: 20px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            input[type="email"],
+            input[type="submit"] {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Send Email</h1>
+        <form action="{{ url_for('main.send_email') }}" method="post">
+            <input type="hidden" name="order_id" value="{{ order_id }}">
+            <input type="hidden" name="password" value="{{ password }}">
+            <input type="hidden" name="big_link" value="{{ big_link }}">
+
+            <label for="email">Customer Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <input type="submit" value="Send Email">
+        </form>
+    </div>
+</body>
+</html>
