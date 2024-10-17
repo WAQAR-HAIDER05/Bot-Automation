@@ -50,27 +50,39 @@ def send_email():
 @main_bp.route('/customer', methods=['GET', 'POST'])
 def customer():
     if request.method == 'POST':
-        order_id = request.form['order_id']
-        access_code = request.form.get('access_code')
-        email = request.form['email']
+        try:
+            # Extract form data
+            order_id = request.form['order_id']
+            access_code = request.form.get('access_code')
+            email = request.form['email']
 
-        # Ensure that access_code is provided
-        if not access_code:
-            flash('Access code is required!')
+            # Ensure that access_code is provided
+            if not access_code:
+                flash('Access code is required!')
+                return redirect(url_for('main.customer'))
+
+            # Save customer request into the Order table within a single transaction
+            new_request = Order(order_id=order_id, access_code=access_code, email=email, role='customer')
+            db.session.add(new_request)
+            db.session.commit()
+
+            # Start automation (this could be an async task for better performance)
+            bot_automation(order_id)
+
+            # Flash success message
+            flash('Request submitted successfully! Automation started.')
+
+            # Optional: Email notification commented out for optimization
+            # if send_admin_email(order_id, access_code, email):
+            #     flash('Admin notified via email.')
+            # else:
+            #     flash('Failed to send admin notification email.')
+
+        except Exception as e:
+            # Rollback the database transaction in case of error
+            db.session.rollback()
+            flash(f'An error occurred: {str(e)}')
             return redirect(url_for('main.customer'))
-
-        # Save customer request into the Order table with role 'customer'
-        new_request = Order(order_id=order_id, access_code=access_code, email=email, role='customer')
-        db.session.add(new_request)
-        db.session.commit()
-
-        bot_automation(order_id)
-
-        # Send email to the admin about the customer request
-        if send_admin_email(order_id, access_code, email):
-            flash('Request submitted successfully! and automation started')
-        else:
-            flash('Failed to send request email.')
 
         return redirect(url_for('main.customer'))
 
